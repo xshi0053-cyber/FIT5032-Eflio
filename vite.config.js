@@ -1,18 +1,8 @@
-import { fileURLToPath, URL } from 'node:url'
-
+// vite.config.js
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  }
+  plugins: [vue()],
+  base: '/FIT5032-Eflio/',   // 仓库名要完全匹配（区分大小写）
 })
