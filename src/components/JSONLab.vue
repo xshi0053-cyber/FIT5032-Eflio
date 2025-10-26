@@ -1,69 +1,50 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// Activity 1: Import JSON files (authors.json and bookstores.json)
-import authors from '@/assets/json/authors.json'
-import bookstores from '@/assets/json/bookstores.json'
+// ✅ 用相对路径，避免 @ 别名未配置导致构建失败
+// 如果你更喜欢用 @，请在 vite.config.js 里配置 alias 后再改回去
+import authors from '../assets/json/authors.json'
+import bookstores from '../assets/json/bookstores.json'
 
 const showMessage = ref(false)
 
 // Activity 2: Get authors born after 1850
-const modernAuthors = computed(() => {
-  return authors.filter((author) => author.birthYear > 1850)
-})
+const modernAuthors = computed(() => authors.filter(a => a.birthYear > 1850))
 
 // Activity 3: Get all famous works
-const allFamousWorks = computed(() => {
-  return authors.flatMap((author) => author.famousWorks)
-})
+const allFamousWorks = computed(() =>
+  authors.flatMap(a => a.famousWorks)
+)
 
 // Activity 4: Find author by name
-const orwell = computed(() => {
-  return authors.find((author) => author.name === 'George Orwell')
-})
+const orwell = computed(() => authors.find(a => a.name === 'George Orwell'))
 
 // Activity 5: Find author by ID
-const austen = computed(() => {
-  return authors.find((author) => author.id === 1)
-})
+const austen = computed(() => authors.find(a => a.id === 1))
 
-const booksByAusten = computed(() => {
-  return authors.find((author) => author.id === 1)
-})
+// 用于 v-for 的安全数组（避免 austen 未找到时报错）
+const booksByAusten = computed(() => austen.value?.famousWorks ?? [])
 
 // Activity 9a: Get the company name from the bookstores object.
-const companyName = computed(() => {
-  return bookstores.name
-})
+const companyName = computed(() => bookstores.name)
 
 // Activity 9b: Get the total number of stores from the bookstores object.
-const totalStores = computed(() => {
-  return bookstores.totalStores
-})
+const totalStores = computed(() => bookstores.totalStores)
 
 // Activity 10: Iterate through the storeTypes array and display the store type and the number of stores that use that type.
-const storeTypes = computed(() => {
-  return JSON.stringify(bookstores.storeTypes)
-})
+const storeTypes = computed(() => bookstores.storeTypes)
 
 // Activity 11: Iterate through the openingHours object and display the day of the week and the opening and closing times.
-const openingHours = computed(() => {
-  return (
-    `Weekdays: ` +
-    JSON.stringify(bookstores.openingHours.weekdays) +
-    `; Weekends: ` +
-    JSON.stringify(bookstores.openingHours.weekends)
-  )
-})
+const openingHours = computed(
+  () =>
+    `Weekdays: ${JSON.stringify(bookstores.openingHours.weekdays)}; ` +
+    `Weekends: ${JSON.stringify(bookstores.openingHours.weekends)}`
+)
 
-const countriesOperated = computed(() => {
-  return bookstores.countries.join(', ')
-})
+const countriesOperated = computed(() => bookstores.countries.join(', '))
 
 // Activity 12: Get the top sellers from the bookstores object.
-const topSellers = computed(() => {
-  return bookstores.topSellers.join(', ')
-})
+const topSellers = computed(() => bookstores.topSellers.join(', '))
 
 // Activity 13: Toggle the message visibility when the button is clicked.
 const toggleMessage = () => {
@@ -71,7 +52,6 @@ const toggleMessage = () => {
 }
 </script>
 
-<!-- JSONLab.vue -->
 <template>
   <div class="json-lab">
     <h1>🗄️ W2. JSON Data & Vue Directives Lab</h1>
@@ -101,7 +81,9 @@ const toggleMessage = () => {
       <p>Famous works:</p>
       <!-- Activity 8 -->
       <ul>
-        <li v-for="work in allFamousWorks" :key="work">{{ work.title }} ({{ work.year }})</li>
+        <li v-for="work in allFamousWorks" :key="work.title">
+          {{ work.title }} ({{ work.year }})
+        </li>
       </ul>
 
       <h3>Finding in Arrays</h3>
@@ -111,7 +93,7 @@ const toggleMessage = () => {
       <p>{{ austen?.name }}'s works:</p>
       <!-- Activity 9 -->
       <ul>
-        <li v-for="work in booksByAusten.famousWorks" :key="work">
+        <li v-for="work in booksByAusten" :key="work.title">
           {{ work.title }} ({{ work.year }})
         </li>
       </ul>
@@ -122,21 +104,17 @@ const toggleMessage = () => {
       <p>Our <code>bookstores.json</code> is a JSON object.</p>
 
       <h3>Accessing Properties</h3>
-      <p>
-        Company:
-        <!-- Activity 9a -->
-        {{ companyName }}
-      </p>
-
-      <p>
-        Total Stores: {{ totalStores }}
-        <!-- Activity 9b -->
-      </p>
+      <p>Company: {{ companyName }}</p>
+      <p>Total Stores: {{ totalStores }}</p>
 
       <h3>Iterating Object Properties</h3>
       <p>Store Types:</p>
       <!-- Activity 10 -->
-      {{ storeTypes }}
+      <ul>
+        <li v-for="st in storeTypes" :key="st.type">
+          {{ st.type }} — {{ st.count }}
+        </li>
+      </ul>
 
       <h3>Nested Objects</h3>
       <p>Opening Hours:</p>
